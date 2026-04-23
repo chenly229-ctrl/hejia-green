@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>会展碳排放估算 · 上海和珈文化传媒</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+  body {
+    font-family: -apple-system, "PingFang SC", "Helvetica Neue", Arial, sans-serif;
+    background: #f5f5f0;
+    color: #1a1a1a;
+    font-size: 15px;
+    line-height: 1.6;
+    padding-bottom: 40px;
+  }
+
+  /* 顶部品牌栏 */
+  .header {
+    background: #fff;
+    border-bottom: 1px solid #e8e8e0;
+    padding: 16px 20px 14px;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  }
+  .header-brand { font-size: 12px; color: #888; margin-bottom: 2px; }
+  .header-title { font-size: 17px; font-weight: 500; color: #1a1a1a; }
+
+  /* 主体内容 */
+  .container { padding: 16px; max-width: 480px; margin: 0 auto; }
+
+  /* 卡片 */
+  .card {
+    background: #fff;
+    border-radius: 12px;
+    padding: 16px;
+    margin-bottom: 12px;
+    border: 0.5px solid #e0e0d8;
+  }
+  .card-title {
+    font-size: 11px;
+    font-weight: 500;
+    color: #888;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    margin-bottom: 14px;
+  }
+
+  /* 输入行 */
+  .input-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 7px 0;
+    border-bottom: 0.5px solid #f0f0e8;
+  }
+  .input-row:last-child { border-bottom: none; padding-bottom: 0; }
+  .input-row:first-of-type { padding-top: 0; }
+  .input-label { flex: 1; font-size: 14px; color: #333; }
+  .input-row input[type=number] {
+    width: 68px;
+    font-size: 15px;
+    font-weight: 500;
+    text-align: right;
+    padding: 5px 8px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background: #f9f9f6;
+    color: #1a1a1a;
+    -webkit-appearance: none;
+    appearance: none;
+  }
+  .input-row input[type=number]:focus {
+    outline: none;
+    border-color: #2E7D52;
+    background: #fff;
+  }
+  .unit { font-size: 12px; color: #aaa; width: 26px; flex-shrink: 0; }
+
+  /* 滑动条行 */
+  .slider-row { padding: 8px 0; border-bottom: 0.5px solid #f0f0e8; }
+  .slider-row:last-child { border-bottom: none; }
+  .slider-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+  .slider-label { font-size: 14px; color: #333; }
+  .slider-val { font-size: 14px; font-weight: 500; color: #2E7D52; }
+  input[type=range] {
+    width: 100%;
+    height: 4px;
+    -webkit-appearance: none;
+    appearance: none;
+    background: #e0e0d8;
+    border-radius: 2px;
+    outline: none;
+  }
+  input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: #2E7D52;
+    cursor: pointer;
+    border: 2px solid #fff;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.18);
+  }
+
+  /* 结果指标卡 */
+  .metrics { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px; }
+  .metric {
+    background: #f5f5f0;
+    border-radius: 10px;
+    padding: 12px 14px;
+  }
+  .metric.green { background: #e8f4ee; }
+  .metric-label { font-size: 11px; color: #888; margin-bottom: 4px; }
+  .metric-value { font-size: 22px; font-weight: 500; color: #1a1a1a; line-height: 1.2; }
+  .metric.green .metric-value { color: #1E5C38; }
+  .metric-unit { font-size: 11px; color: #aaa; margin-top: 2px; }
+
+  /* 条形图 */
+  .bar-item { margin-bottom: 10px; }
+  .bar-item:last-child { margin-bottom: 0; }
+  .bar-meta { display: flex; justify-content: space-between; margin-bottom: 4px; }
+  .bar-name { font-size: 13px; color: #555; }
+  .bar-kg { font-size: 13px; color: #333; font-weight: 500; }
+  .bar-track {
+    height: 8px;
+    background: #f0f0e8;
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  .bar-fill {
+    height: 100%;
+    border-radius: 4px;
+    transition: width 0.4s ease;
+  }
+
+  /* 减排明细 */
+  .green-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 9px 0;
+    border-bottom: 0.5px solid #f0f0e8;
+    font-size: 14px;
+  }
+  .green-row:last-child { border-bottom: none; }
+  .green-row .name { color: #555; }
+  .green-row .saved { color: #1E5C38; font-weight: 500; }
+  .green-row.total { font-weight: 500; }
+  .green-row.total .name { color: #1a1a1a; }
+
+  /* 注脚 */
+  .footer {
+    text-align: center;
+    font-size: 11px;
+    color: #bbb;
+    margin-top: 20px;
+    padding: 0 16px;
+    line-height: 1.8;
+  }
+  .footer strong { color: #888; font-weight: 500; }
+
+  /* 提示标签 */
+  .tip {
+    background: #e8f4ee;
+    border-radius: 8px;
+    padding: 10px 14px;
+    font-size: 12px;
+    color: #2E7D52;
+    margin-bottom: 12px;
+    line-height: 1.6;
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-brand">上海和珈文化传媒有限公司</div>
+  <div class="header-title">会展碳排放估算工具</div>
+</div>
+
+<div class="container">
+
+  <div class="tip">填写活动信息后自动计算碳排放，可截图用于ESG报告或绿色采购说明。</div>
+
+  <!-- 输入：参会人员 -->
+  <div class="card">
+    <div class="card-title">参会人员</div>
+    <div class="input-row"><span class="input-label">线下参会人数</span><input type="number" id="i_offline" value="200" min="0" inputmode="numeric"><span class="unit">人</span></div>
+    <div class="input-row"><span class="input-label">线上参会人数</span><input type="number" id="i_online" value="50" min="0" inputmode="numeric"><span class="unit">人</span></div>
+    <div class="input-row"><span class="input-label">平均交通距离（单程）</span><input type="number" id="i_dist" value="30" min="0" inputmode="numeric"><span class="unit">km</span></div>
+    <div class="input-row"><span class="input-label">过夜住宿人数</span><input type="number" id="i_hotel" value="20" min="0" inputmode="numeric"><span class="unit">人</span></div>
+    <div class="input-row"><span class="input-label">平均住宿天数</span><input type="number" id="i_nights" value="1" min="0" inputmode="numeric"><span class="unit">晚</span></div>
+  </div>
+
+  <!-- 输入：现场执行 -->
+  <div class="card">
+    <div class="card-title">现场执行</div>
+    <div class="input-row"><span class="input-label">餐饮/茶歇人次</span><input type="number" id="i_catering" value="200" min="0" inputmode="numeric"><span class="unit">人次</span></div>
+    <div class="input-row"><span class="input-label">印刷品数量（手册等）</span><input type="number" id="i_print" value="150" min="0" inputmode="numeric"><span class="unit">份</span></div>
+    <div class="input-row"><span class="input-label">活动用电时长</span><input type="number" id="i_elec" value="8" min="0" inputmode="numeric"><span class="unit">小时</span></div>
+    <div class="input-row"><span class="input-label">展陈搭建面积</span><input type="number" id="i_area" value="50" min="0" inputmode="numeric"><span class="unit">m²</span></div>
+  </div>
+
+  <!-- 输入：和珈绿色措施 -->
+  <div class="card">
+    <div class="card-title">和珈绿色措施（拖动调整）</div>
+    <div class="slider-row">
+      <div class="slider-header"><span class="slider-label">电子化替代印刷比例</span><span class="slider-val" id="sv_paper">40%</span></div>
+      <input type="range" id="s_paper" min="0" max="100" value="40" step="5">
+    </div>
+    <div class="slider-row">
+      <div class="slider-header"><span class="slider-label">可复用展架比例</span><span class="slider-val" id="sv_reuse">60%</span></div>
+      <input type="range" id="s_reuse" min="0" max="100" value="60" step="5">
+    </div>
+    <div class="slider-row">
+      <div class="slider-header"><span class="slider-label">线上替代线下参会比例</span><span class="slider-val" id="sv_online">20%</span></div>
+      <input type="range" id="s_online" min="0" max="100" value="20" step="5">
+    </div>
+  </div>
+
+  <!-- 结果指标卡 -->
+  <div class="metrics">
+    <div class="metric">
+      <div class="metric-label">总碳排放</div>
+      <div class="metric-value" id="o_total">—</div>
+      <div class="metric-unit">kg CO₂e</div>
+    </div>
+    <div class="metric green">
+      <div class="metric-label">和珈措施减排</div>
+      <div class="metric-value" id="o_saved">—</div>
+      <div class="metric-unit">kg CO₂e</div>
+    </div>
+    <div class="metric">
+      <div class="metric-label">人均碳排放</div>
+      <div class="metric-value" id="o_per">—</div>
+      <div class="metric-unit">kg CO₂e / 人</div>
+    </div>
+    <div class="metric green">
+      <div class="metric-label">减排比例</div>
+      <div class="metric-value" id="o_pct">—</div>
+      <div class="metric-unit">较基准值</div>
+    </div>
+  </div>
+
+  <!-- 排放来源条形图 -->
+  <div class="card">
+    <div class="card-title">排放来源分布</div>
+    <div id="bars">
+      <div class="bar-item" id="b0"><div class="bar-meta"><span class="bar-name">交通与住宿</span><span class="bar-kg" id="bv0">— kg</span></div><div class="bar-track"><div class="bar-fill" style="background:#378ADD;width:0%"></div></div></div>
+      <div class="bar-item" id="b1"><div class="bar-meta"><span class="bar-name">餐饮茶歇</span><span class="bar-kg" id="bv1">— kg</span></div><div class="bar-track"><div class="bar-fill" style="background:#1D9E75;width:0%"></div></div></div>
+      <div class="bar-item" id="b2"><div class="bar-meta"><span class="bar-name">印刷物料</span><span class="bar-kg" id="bv2">— kg</span></div><div class="bar-track"><div class="bar-fill" style="background:#BA7517;width:0%"></div></div></div>
+      <div class="bar-item" id="b3"><div class="bar-meta"><span class="bar-name">用电能耗</span><span class="bar-kg" id="bv3">— kg</span></div><div class="bar-track"><div class="bar-fill" style="background:#D85A30;width:0%"></div></div></div>
+      <div class="bar-item" id="b4"><div class="bar-meta"><span class="bar-name">展陈搭建</span><span class="bar-kg" id="bv4">— kg</span></div><div class="bar-track"><div class="bar-fill" style="background:#7F77DD;width:0%"></div></div></div>
+    </div>
+  </div>
+
+  <!-- 减排明细 -->
+  <div class="card">
+    <div class="card-title">和珈绿色措施减排明细</div>
+    <div class="green-row"><span class="name">无纸化/电子化替代</span><span class="saved" id="g0">— kg CO₂e</span></div>
+    <div class="green-row"><span class="name">可复用展架材料</span><span class="saved" id="g1">— kg CO₂e</span></div>
+    <div class="green-row"><span class="name">线上替代线下出行</span><span class="saved" id="g2">— kg CO₂e</span></div>
+    <div class="green-row total"><span class="name">合计减排</span><span class="saved" id="g3">— kg CO₂e</span></div>
+  </div>
+
+  <div class="footer">
+    <strong>上海和珈文化传媒有限公司</strong><br>
+    绿色会展整体解决方案服务商<br>
+    排放因子参考：IPCC AR6 · 中国电网平均排放因子（2023）<br>
+    本工具仅供参考估算，如需精确核查请联系和珈绿色会展顾问
+  </div>
+
+</div>
+
+<script>
+  /* 排放因子 */
+  var F = {
+    transport: 0.21,   /* kg CO₂e / 人 / km（地面交通平均） */
+    online:    0.004,  /* kg CO₂e / 人 / 小时（线上参会） */
+    hotel:     12,     /* kg CO₂e / 人 / 晚 */
+    catering:  2.5,    /* kg CO₂e / 人次 */
+    print:     0.05,   /* kg CO₂e / 份（约20页手册） */
+    elec:      0.581,  /* kg CO₂e / kWh（中国电网2023） */
+    area:      4.0,    /* kg CO₂e / m²（一次性展架） */
+    venueKW:   15      /* 场馆平均功率 kW */
+  };
+
+  function num(id){ return parseFloat(document.getElementById(id).value) || 0; }
+
+  function calc(){
+    var offline  = num('i_offline');
+    var online   = num('i_online');
+    var dist     = num('i_dist');
+    var hotel    = num('i_hotel');
+    var nights   = num('i_nights');
+    var catering = num('i_catering');
+    var print    = num('i_print');
+    var elec     = num('i_elec');
+    var area     = num('i_area');
+    var gPaper   = num('s_paper') / 100;
+    var gReuse   = num('s_reuse') / 100;
+    var gOnline  = num('s_online') / 100;
+
+    /* 各类排放 */
+    var eTransport = offline * dist * 2 * F.transport;
+    var eHotel     = hotel * nights * F.hotel;
+    var eOnline    = online * elec * F.online;
+    var eCatering  = catering * F.catering;
+    var ePrint     = print * F.print;
+    var eElec      = F.venueKW * elec * F.elec;
+    var eArea      = area * F.area;
+
+    var components = [
+      eTransport + eHotel,
+      eCatering,
+      ePrint,
+      eElec + eOnline,
+      eArea
+    ];
+    var total = components.reduce(function(a,b){ return a+b; }, 0);
+
+    /* 减排 */
+    var sPaper  = print * F.print * gPaper;
+    var sReuse  = area * F.area * gReuse;
+    var sOnline = offline * dist * 2 * F.transport * gOnline;
+    var saved   = sPaper + sReuse + sOnline;
+    var people  = offline + online;
+    var pct     = total > 0 ? (saved / total * 100) : 0;
+
+    /* 更新指标卡 */
+    document.getElementById('o_total').textContent = Math.round(total).toLocaleString();
+    document.getElementById('o_saved').textContent = Math.round(saved).toLocaleString();
+    document.getElementById('o_per').textContent   = people > 0 ? (total / people).toFixed(1) : '—';
+    document.getElementById('o_pct').textContent   = pct.toFixed(1) + '%';
+
+    /* 条形图 */
+    var maxVal = Math.max.apply(null, components.concat([1]));
+    for(var i = 0; i < 5; i++){
+      var w = (components[i] / maxVal * 100).toFixed(1);
+      document.getElementById('bv' + i).textContent = Math.round(components[i]) + ' kg';
+      document.querySelector('#b' + i + ' .bar-fill').style.width = w + '%';
+    }
+
+    /* 减排明细 */
+    document.getElementById('g0').textContent = '-' + Math.round(sPaper)  + ' kg CO₂e';
+    document.getElementById('g1').textContent = '-' + Math.round(sReuse)  + ' kg CO₂e';
+    document.getElementById('g2').textContent = '-' + Math.round(sOnline) + ' kg CO₂e';
+    document.getElementById('g3').textContent = '-' + Math.round(saved)   + ' kg CO₂e（' + pct.toFixed(1) + '%）';
+  }
+
+  /* 滑动条同步显示值 */
+  ['s_paper','s_reuse','s_online'].forEach(function(id){
+    var valId = id.replace('s_','sv_');
+    document.getElementById(id).addEventListener('input', function(){
+      document.getElementById(valId).textContent = this.value + '%';
+      calc();
+    });
+  });
+
+  /* 数字输入变化 */
+  document.querySelectorAll('input[type=number]').forEach(function(el){
+    el.addEventListener('input', calc);
+  });
+
+  /* 初始计算 */
+  calc();
+</script>
+</body>
+</html>
